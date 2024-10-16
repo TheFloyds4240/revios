@@ -1,6 +1,6 @@
 <h1 align="center">
 
-ReviOS Playbook📜
+ReviOS Playbook📜 Beta
 
 ---
 
