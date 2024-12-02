@@ -20,7 +20,7 @@ actions:
 
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Services\Pending\7971f918-a847-4430-9279-4a52d1efe18d', value: 'RegisterWithAU', type: REG_DWORD, data: '0'}
   
-  # [!] Breaks 'defrag c: -b' and cores parking on some AMD CPUs
+  # [!] Breaks 'defrag c: -b'
   # Disable Superfetch for SSDs
   # Detection of mediaType might not work on VMs
   # - !powerShell:
@@ -68,7 +68,7 @@ actions:
   - !run:
     exeDir: true
     exe: "FILEASSOC.cmd"
-    option: "configure-lpv"
+    option: "remove-appx-photos"
     weight: 150
 
   - !cmd:
@@ -95,12 +95,6 @@ actions:
   - !appx: {operation: clearCache, name: '*StartMenuExperienceHost*', option: "remove-pinned-items-startmenu"}
   - !appx: {operation: clearCache, name: '*Windows.Search*'}
   - !appx: {operation: clearCache, name: '*TCUI*'}
-    # Workaround for KGL versions to match
-  - !appx: {operation: clearCache, name: '*XboxGameCallableUI*'}
-  - !appx: {operation: clearCache, name: '*XboxGameOverlay*'}
-  - !appx: {operation: clearCache, name: '*XboxGamingOverlay*'}
-  - !appx: {operation: clearCache, name: '*XboxIdentityProvider*'}
-  - !appx: {operation: clearCache, name: '*XboxSpeechToTextOverlay*'}
 
   # Force update group policy
   - !run: 
@@ -112,4 +106,13 @@ actions:
     exe: "revitool.exe"
     args: "playbook-patches apply"
     wait: true
+    runas: currentUserElevated
+    
+  - !powerShell:
+    command: |
+      $explorerProcess = Get-Process -Name explorer -ErrorAction SilentlyContinue
+      if ($explorerProcess) {
+        Stop-Process -Name explorer -Force
+      }
+      Start-Process explorer
     runas: currentUserElevated
